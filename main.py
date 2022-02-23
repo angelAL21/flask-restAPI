@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_restful import Api, Resource, reqparse
+from flask_restful import Api, Resource, reqparse, abort
 
 app= Flask(__name__)
 api = Api(app)
@@ -11,8 +11,13 @@ video_put_args.add_argument("likes", type=int, help="likes on video", required=T
 
 videos={}
 
+def abort_ifVideo_NotFound(video_id):
+    if video_id not in videos:
+        abort(404, message="video id is not valid or does not exist")
+
 class Video(Resource):
     def get(self, video_id):
+        abort_ifVideo_NotFound(video_id)
         return videos[video_id]
     
     def put(self, video_id):

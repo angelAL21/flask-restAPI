@@ -14,6 +14,10 @@ videos={}
 def abort_ifVideo_NotFound(video_id):
     if video_id not in videos:
         abort(404, message="video id is not valid or does not exist")
+        
+def abort_ifVideo_Exists(video_id):
+    if video_id in videos:
+        abort(409, message="video already exists")
 
 class Video(Resource):
     def get(self, video_id):
@@ -24,6 +28,11 @@ class Video(Resource):
         args = video_put_args.parse_args()
         videos[video_id] =args
         return videos[video_id], 201
+    
+    def delete(self, video_id):
+        abort_ifVideo_Exists(video_id)
+        del videos[video_id]
+        return '', 204
 
 #endpoint helloworld.
 api.add_resource(Video, "/video/<int:video_id>")
